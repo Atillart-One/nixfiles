@@ -11,7 +11,7 @@
     # inputs.nix-colors.homeManagerModules.default
 
     # You can also split up your configuration and import pieces of it here:
-    # ./nvim.nix
+    ./nvim.nix
   ];
 
   nixpkgs = {
@@ -47,8 +47,7 @@
   };
 
   # Add stuff for your user as you see fit:
-  programs.neovim.enable = true;
-	home.packages = with pkgs; [ retroarchFull obsidian tym distrobox];
+  home.packages = with pkgs; [ retroarchFull obsidian tym distrobox];
 
   # Enable home-manager and git
   programs.home-manager.enable = true;

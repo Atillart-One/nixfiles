@@ -7,8 +7,18 @@
   # You can change versions, add patches, set compilation flags, anything really.
   # https://nixos.wiki/wiki/Overlays
   modifications = final: prev: {
-    # example = prev.example.overrideAttrs (oldAttrs: rec {
-    # ...
-    # });
+    looking-glass-client = prev.looking-glass-client.overrideAttrs (oldAttrs: rec {
+      version = "B6-rc1";
+      src = prev.fetchFromGitHub {
+        owner = "gnif";
+        repo = "LookingGlass";
+        rev = version;
+        hash = "sha256-ZFCfasEWG512n7FEKSIuzof0OAy5iTRJfntGsA5jumQ=";
+	fetchSubmodules = true;
+      };
+
+      buildInputs = [ prev.looking-glass-client.buildInputs final.pipewire final.pulseaudio final.libsamplerate ];
+    });
   };
 }
+

@@ -9,10 +9,14 @@
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
       ./nvidia.nix
+      ./intel.nix
       ./asus.nix
       ./extra.nix
-      ./vfio.nix
+#      ./vfio.nix
     ];
+
+  nix.settings.auto-optimise-store = true;
+  boot.kernelPackages = pkgs.linuxPackages_latest;
 
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
@@ -20,7 +24,6 @@
   
   # Plymouth looks cool
   boot.plymouth.enable = true;
-  boot.plymouth.theme = "breeze";
 
   # Enable unfree packages
   nixpkgs.config.allowUnfree = true;

@@ -1,6 +1,9 @@
 { config, pkgs, ... }:
 
 {
+  # Disable service
+  systemd.services.NetworkManager-wait-online.enable = false;
+
   # Enable podman
   virtualisation = {
     podman = {
