@@ -6,35 +6,39 @@
 
 {
   imports =
-    [ # Include the results of the hardware scan.
+    [
+      # Include the results of the hardware scan.
       ./hardware-configuration.nix
       ./nvidia.nix
       ./intel.nix
       ./asus.nix
       ./extra.nix
-#      ./vfio.nix
+      ./vfio.nix
     ];
 
   nix.settings.auto-optimise-store = true;
   boot.kernelPackages = pkgs.linuxPackages_latest;
+  hardware.enableAllFirmware = true;
 
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-  
+
   # Plymouth looks cool
   boot.plymouth.enable = true;
 
   # Enable unfree packages
   nixpkgs.config.allowUnfree = true;
-  
+
   # Enable experimental features
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
   # networking.hostName = "nixos"; # Define your hostname.
   # Pick only one of the below networking options.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
-  # networking.networkmanager.enable = true;  # Easiest to use and most distros use this by default.
+  networking.wireless.iwd.enable = true;
+  networking.networkmanager.enable = true; # Easiest to use and most distros use this by default.
+  networking.networkmanager.wifi.backend = "iwd";
 
   # Set your time zone.
   time.timeZone = "Asia/Kolkata";
@@ -48,7 +52,7 @@
   console = {
     font = "Lat2-Terminus16";
     keyMap = "us";
-  #   useXkbConfig = true; # use xkbOptions in tty.
+    #   useXkbConfig = true; # use xkbOptions in tty.
   };
 
   # Enable the X11 windowing system.
@@ -57,17 +61,29 @@
   # Enable the GNOME Desktop Environment.
   services.xserver.displayManager.gdm.enable = true;
   services.xserver.desktopManager.gnome.enable = true;
- 
+
   # Enable AwesomeWM
   services.xserver.windowManager.awesome.enable = true;
   services.xserver.windowManager.awesome.package = pkgs.awesome-git;
+
+  # zram
+  zramSwap = {
+    enable = true;
+  };
 
   fileSystems = {
     "/".options = [ "compress=zstd" ];
     "/home".options = [ "compress=zstd" ];
     "/nix".options = [ "compress=zstd" "noatime" ];
-    };
-	
+    "/swap".options = [ "noatime" ];
+  };
+
+  # Periodic TRIM
+  services.fstrim = {
+    enable = true;
+    interval = "weekly"; # the default
+  };
+
   # Configure keymap in X11
   services.xserver.layout = "us";
   # services.xserver.xkbOptions = {

@@ -19,9 +19,15 @@
     # Overlays from fortuneteller2k
     nixpkgs-f2k.url = "github:fortuneteller2k/nixpkgs-f2k";
 
+    # webcord
+    webcord.url = "github:fufexan/webcord-flake";
+
+    # nix gaming
+    nix-gaming.url = "github:fufexan/nix-gaming";
+
   };
 
-  outputs = { self, nixpkgs, home-manager, nixos-hardware, nixpkgs-f2k, ... }@inputs:
+  outputs = { self, nixpkgs, home-manager, nixos-hardware, nixpkgs-f2k, webcord, nix-gaming, ... }@inputs:
     let
       inherit (self) outputs;
       forAllSystems = nixpkgs.lib.genAttrs [
@@ -65,16 +71,17 @@
             # > Our main nixos configuration file <
             ./nixos/configuration.nix
 
-	    # Hardware
-	    nixos-hardware.nixosModules.asus-fx504gd
+            # Hardware
+            nixos-hardware.nixosModules.asus-fx504gd
 
-	    # Overlays
-	    {
-	    nixpkgs.overlays = [
-  	      nixpkgs-f2k.overlays.compositors # for X11 compositors
-	      nixpkgs-f2k.overlays.window-managers # window managers such as awesome or river
-	    ];
-	   }
+            # Overlays
+            {
+              nixpkgs.overlays = [
+                nixpkgs-f2k.overlays.compositors # for X11 compositors
+                nixpkgs-f2k.overlays.window-managers # window managers such as awesome or river
+                overlays.modifications
+              ];
+            }
           ];
         };
       };
@@ -94,5 +101,5 @@
         };
       };
     };
-    
+
 }

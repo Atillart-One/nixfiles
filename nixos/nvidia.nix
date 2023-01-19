@@ -1,4 +1,4 @@
-({ lib, config, pkgs, ... }:
+{ lib, config, pkgs, ... }:
 let
   nvidia-offload = pkgs.writeShellScriptBin "nvidia-offload" ''
     export __NV_PRIME_RENDER_OFFLOAD=1
@@ -8,25 +8,29 @@ let
     exec "$@"
   '';
 in
-{ 
-  config = lib.mkIf (config.specialisation != {}) {
-  services.xserver.videoDrivers = [ "nvidia" ];
-  environment.systemPackages = [ nvidia-offload ];
-  hardware = {
-   nvidia = {
-     modesetting.enable = true;    
-      open = true;
-      powerManagement.enable = true;
-      prime = {
-        offload.enable = true;
+{
+  specialisation.nvidia.configuration = {
+    powerManagement.cpuFreqGovernor = "performance";
+    services.xserver.videoDrivers = [ "nvidia" ];
+    environment.systemPackages = [ nvidia-offload ];
+    hardware = {
+      opengl.driSupport32Bit = true;
+      nvidia = {
+        package = config.boot.kernelPackages.nvidiaPackages.beta;
+        modesetting.enable = true;
+        open = true;
+        powerManagement.enable = true;
+        powerManagement.finegrained = true;
+        prime = {
+          offload.enable = true;
 
-      # Bus ID of the Intel GPU. You can find it using lspci, either under 3D or VGA
-      intelBusId = "PCI:0:2:0";
+          # Bus ID of the Intel GPU. You can find it using lspci, either under 3D or VGA
+          intelBusId = "PCI:0:2:0";
 
-      # Bus ID of the NVIDIA GPU. You can find it using lspci, either under 3D or VGA
-      nvidiaBusId = "PCI:1:0:0";
-     };
-   };
- };
- };
-})
+          # Bus ID of the NVIDIA GPU. You can find it using lspci, either under 3D or VGA
+          nvidiaBusId = "PCI:1:0:0";
+        };
+      };
+    };
+  };
+}
